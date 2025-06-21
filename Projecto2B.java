@@ -1,6 +1,10 @@
 import java.io.*;
 import java.util.*;
 
+//Universidade de Santiago
+//Ano Lectivo 2024/2025
+//Disciplina Linguagem de Programação
+
 public class Projecto2B {
 
     private static final String ARQUIVO_CLIENTES = "Clientes.txt";
