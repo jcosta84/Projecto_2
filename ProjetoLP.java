@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-public class Projecto2C {
+public class ProjetoLP {
 
     public static String clientes = "Clientes.txt";
     public static void main(String[] args) {
@@ -109,29 +109,43 @@ public class Projecto2C {
                     String todos = ler.nextLine().toLowerCase();
 
                     File inputFile = new File(clientes);
-                    File tempFile = new File("dadosClientes.txt");
+                    File tempFile = new File("temp.txt");
 
+                    boolean modificou = false;
+
+                    // Etapa 1: copiar para o ficheiro temporário
                     try (
                         BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-                        PrintWriter writer = new PrintWriter(new FileWriter(tempFile))) {
+                        PrintWriter writer = new PrintWriter(new FileWriter(tempFile))
+                    ) {
                         String linha;
                         while ((linha = reader.readLine()) != null) {
-                        String[] partes = linha.split(",");
-                        if (partes.length >= 3) {
-                            if (todos.equals("s")) {
-                        if (!partes[0].equalsIgnoreCase(gerarFaturaCliente)) {
-                            writer.println(linha);
+                            String[] partes = linha.split(",");
+                            if (partes.length >= 3) {
+                                if (todos.equals("s")) {
+                                    if (!partes[0].equalsIgnoreCase(gerarFaturaCliente)) {
+                                        writer.println(linha);
+                                    } else {
+                                        modificou = true;
+                                    }
+                                } else {
+                                    System.out.printf("Eliminar este registo? %s (s/n): ", linha);
+                                    String resposta = ler.nextLine().trim().toLowerCase();
+                                    if (!resposta.equals("s")) {
+                                        writer.println(linha);
+                                    } else {
+                                        modificou = true;
+                                    }
+                                }
+                            }
                         }
-                    } else {
-                        System.out.printf("Eliminar este registo? %s (s/n): ", linha);
-                        String resposta = ler.nextLine().trim().toLowerCase();
-                        if (!resposta.equals("s")) {
-                            writer.println(linha);
-                        }
+                    } catch (IOException e) {
+                        System.out.println("Erro ao processar ficheiros: " + e.getMessage());
+                        break;
                     }
-                }
-            }
-                   try {
+
+                    // Etapa 2: eliminar e renomear
+                    if (modificou) {
                         if (inputFile.delete()) {
                             if (tempFile.renameTo(inputFile)) {
                                 System.out.println("Registos eliminados com sucesso.");
@@ -141,12 +155,12 @@ public class Projecto2C {
                         } else {
                             System.out.println("Erro: não foi possível eliminar o ficheiro original.");
                         }
-                    } catch (Exception e) {
-                        System.out.println("Erro ao atualizar o ficheiro: " + e.getMessage());
+                    } else {
+                        // Nada foi alterado, então elimina o ficheiro temporário
+                        tempFile.delete();
+                        System.out.println("Nenhum registo foi eliminado.");
                     }
-                    } catch (IOException e) {
-                        System.out.println("Erro ao processar ficheiros: " + e.getMessage());
-                    }break;
+                    break;
 
                 //Encerrar
                 case "5":
